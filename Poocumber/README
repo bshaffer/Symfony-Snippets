@@ -1,0 +1,52 @@
+Example Feature:
+  
+  [yaml]
+  # test/data/features/company_features.yml
+  Create a new company:
+    Given:  
+      - I am logged in
+      - Company table is empty
+    When:   I create a new company named Acme
+    Then:   I should see that company named Acme exists
+    
+Example Steps:
+
+  [php]
+  // test/data/features/steps/company_steps.php
+  
+  $this->given("I am logged in",
+    function($browser) {
+        $browser->get('/')
+          ->with('form')->begin()
+            ->fill('login')
+          ->end()
+          ->click('Sign in');
+    });  
+
+  $this->given("(.*) table is empty",
+    function($browser, $matches) {
+      Doctrine::getTable($matches[1])->createQuery()->delete();
+    });
+    
+  $this->when('/I create a new company named (.*)/',
+    function($browser, $matches) {
+        $browser->get('@new_company')
+          ->setField('company[name]', $matches[1])
+          ->click('Save');
+    });
+  
+  
+  $this->then('/I should see that a new company named (.*) exists/',
+    function($browser, $matches) {
+        $browser->get('@companies')
+        ->with('response')->begin()
+          ->matches('/'.$matches[1].'/')
+        ->end();
+    });
+
+Example functional test:
+
+  [php]
+  // test/functional/frontend/companyTest.php
+  $browser = new sfCucumberTestFunctional(new sfBrowser());
+  $browser->testFeature('company');
