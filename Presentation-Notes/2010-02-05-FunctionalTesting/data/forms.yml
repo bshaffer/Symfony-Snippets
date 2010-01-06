@@ -1,0 +1,15 @@
+login_bad:
+  signin:
+    username:       admin
+    password:       wrongpassword
+
+login:
+  signin:
+    username:       admin
+    password:       password
+    
+login2:
+  signin[username]:       admin
+  signin[password]:       admin    
+  
+company:           []

@@ -1,0 +1,15 @@
+- 
+  url:  /blog
+  module: blog
+  action: index
+  statusCode: 200
+- 
+  url:  /blog/new
+  module: blog
+  action: new
+  statusCode: 200
+- 
+  url:  /blog/edit
+  module: blog
+  action: edit
+  statusCode: 401
