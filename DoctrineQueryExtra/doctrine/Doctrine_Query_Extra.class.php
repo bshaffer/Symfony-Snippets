@@ -48,6 +48,10 @@ class Doctrine_Query_Extra extends Doctrine_Query
   {
     if ($this->_startClause) 
     {
+      $this->_startClause = false;
+      
+      // Remove last two elements (open parenthesis and the "AND or OR" before it)
+      array_pop($this->_dqlParts['where']);
       array_pop($this->_dqlParts['where']);
     }
     else
