@@ -16,7 +16,7 @@ class Doctrine_Query_Extra extends Doctrine_Query
   public function andClause()
   { 
     if ($this->_hasDqlQueryPart('where')) {
-        $this->_addDqlQueryPart('where', 'OR', true);
+        $this->_addDqlQueryPart('where', 'AND', true);
     }
 
     $this->_addDqlQueryPart('where', '(', true);
