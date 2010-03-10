@@ -15,7 +15,10 @@ class Doctrine_Query_Extra extends Doctrine_Query
    */
   public function andClause()
   { 
-    $this->_addDqlQueryPart('where', 'AND', true);
+    if ($this->_hasDqlQueryPart('where')) {
+        $this->_addDqlQueryPart('where', 'OR', true);
+    }
+
     $this->_addDqlQueryPart('where', '(', true);
 
     $this->_startClause = true;
@@ -31,7 +34,10 @@ class Doctrine_Query_Extra extends Doctrine_Query
    */
   public function orClause()
   {
-    $this->_addDqlQueryPart('where', 'OR', true);
+    if ($this->_hasDqlQueryPart('where')) {
+        $this->_addDqlQueryPart('where', 'OR', true);
+    }
+
     $this->_addDqlQueryPart('where', '(', true);
 
     $this->_startClause = true;
