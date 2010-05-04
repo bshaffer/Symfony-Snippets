@@ -1,0 +1,8 @@
+Example:
+
+  // in actions.class.php
+  if ($this->askConfirmation('Reactivate User', 'This will make this user active immediately.  Are you sure?')) 
+  {
+    $user->reactivate();
+  }
+
