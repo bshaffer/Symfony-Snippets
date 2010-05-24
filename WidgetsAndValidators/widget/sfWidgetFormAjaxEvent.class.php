@@ -1,13 +1,22 @@
 <?php
 
 /**
-* 
+* sfWidgetFormAjaxEvent
+*   A widget that will call an ajax URL and update a selector on change. 
+*   This is fairly transparent. it can pull in messages, a preview, another form element, etc.
+*
+* options:
+*   * widget:  The widget to trigger the ajax event
+*   * update:  A JQuery selector for the DOM element to update with the response
+*   * url:     A url or symfony route to call to update the element above.  The selected value of the widget is automatically appended to this url (ex: '@objects?object_id=' will end up calling '@objects?object_id=2' if "2" is the value selected in your widget)
+*   * on_empty: Text to update the "update" DOM element with if the widget value is empty
+*   * update_on_load: whether to call the AJAX function on page load
 */
-class sfWidgetFormChoiceAjaxEvent extends sfWidgetForm
+class sfWidgetFormAjaxEvent extends sfWidgetForm
 {
   public function configure($options = array(), $attributes = array())
   {
-    $this->addRequiredOption('choice_widget');
+    $this->addRequiredOption('widget');
     $this->addRequiredOption('update');
     $this->addRequiredOption('url');
     
@@ -19,7 +28,7 @@ class sfWidgetFormChoiceAjaxEvent extends sfWidgetForm
   
   public function render($name, $value = null, $attributes = array(), $errors = array())
   {
-    $content = $this->getOption('choice_widget')->render($name, $value, $attributes, $errors);
+    $content = $this->getOption('widget')->render($name, $value, $attributes, $errors);
     $content .= $this->getJavascript($name);
     return $content;
   }
