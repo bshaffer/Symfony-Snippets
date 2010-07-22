@@ -32,7 +32,7 @@
 
       $rows = array($this->helper->exportColumnHeaders($headers)); // Add space in front of header to prevent Excel from interpreting as a SYLK file
       
-      $results = $this->pager->getQuery()->execute(); // bypass offsets
+      $results = $this->getCollectionForExport(); // bypass offsets
 
       foreach ($results as $result) 
       {
@@ -44,4 +44,13 @@
       $this->getContext()->getResponse()->setHttpHeader('Content-Disposition', 'attachment;filename='.$this->configuration->getExportFilename().'.xls;');
       return $this->renderText(implode("\n", $rows));
     }
+  }
+  
+  protected function getCollectionForExport()
+  {
+    $query = $this->pager
+                  ->getQuery()
+                  ->limit(9999999);
+
+    return $query->execute();
   }
