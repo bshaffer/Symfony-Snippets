@@ -2,6 +2,9 @@
 
 class sfPluginTestBootstrap
 {
+  private
+    $tmpFile         = null;
+
   protected
     $symfonyDir     = null,
     $configuration  = null,
@@ -9,6 +12,8 @@ class sfPluginTestBootstrap
 
   public function __construct($symfonyDir = null)
   {
+    $this->tmpFile = sys_get_temp_dir() . '/symfony_dir';
+    
     if ($symfonyDir) 
     {
       $this->setSymfonyDir($symfonyDir);
@@ -61,7 +66,9 @@ class sfPluginTestBootstrap
     {
       $this->symfonyDir   = $symfonyDir;
       $_SERVER['SYMFONY'] = $symfonyDir;
-      file_put_contents('/tmp/symfony_dir', $this->symfonyDir);
+      
+      // Hack to allow the passing in of symfony_dir at runtime
+      file_put_contents($this->tmpFile, $this->symfonyDir);
     }
   }
   
@@ -80,10 +87,10 @@ class sfPluginTestBootstrap
       {
         $this->symfonyDir = $_SERVER['SYMFONY'];
       }
-      elseif(file_exists('/tmp/symfony_dir'))
+      elseif(file_exists($this->tmpFile))
       {
         // Hack to allow the passing in of symfony_dir at runtime
-        $this->symfonyDir = file_get_contents('/tmp/symfony_dir');
+        $this->symfonyDir = file_get_contents($this->tmpFile);
         $_SERVER['SYMFONY'] = $this->symfonyDir;
       }
       else
