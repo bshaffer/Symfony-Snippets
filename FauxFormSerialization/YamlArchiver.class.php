@@ -2,10 +2,10 @@
 
 /**
  * Converts Array to YAML and YAML to array
- *   ** warning: this has not been tested and is only to be used as an example **
+ *
  * @author    Brent Shaffer <bshafs at gmail dot com>
  */
-class ArchiverYaml implements ArchiverInterface
+class YamlArchiver implements ArchiverInterface
 {
   public function sleep($value)
   {

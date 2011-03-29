@@ -24,11 +24,8 @@ class sfValidatorEmbeddedForm extends sfValidatorBase
     protected function configure($options = array(), $messages = array())
     {
         $this->addRequiredOption('form');
-
         $this->addOption('throw_form_errors', true);
-
         $this->addOption('archiver');
-
         $this->addMessage('invalid', 'Your form contains some errors');
 
         parent::configure($options, $messages);
@@ -40,10 +37,8 @@ class sfValidatorEmbeddedForm extends sfValidatorBase
 
         $form->bind($value);
 
-        if ($form->isValid()) 
-        {
-            if($archiverClass = $this->getOption('archiver'))
-            {
+        if ($form->isValid()) {
+            if($archiverClass = $this->getOption('archiver')) {
                 $archiver = new $archiverClass();
                 return $archiver->sleep($form->getValues());
             }

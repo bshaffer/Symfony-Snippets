@@ -11,6 +11,7 @@ class sfWidgetFormEmbeddedForm extends sfWidgetForm
     * options:
     *    * form: Required sfForm instance rendered by this widget
     *    * archiver: provide an archiver to sanitize results into a specific format (XML, YAML, etc).  Default is array.
+    *    * global_attributes: if specified, attributes are passed as if to a widget.  Apply to ALL widgets
     *
     * @param string $options 
     * @param string $attributes 
@@ -20,8 +21,8 @@ class sfWidgetFormEmbeddedForm extends sfWidgetForm
     public function configure($options = array(), $attributes = array())
     {
         $this->addRequiredOption('form');
-
         $this->addOption('archiver');
+        $this->addOption('global_attributes', true);
 
         return parent::configure($options, $attributes);
     }
@@ -31,15 +32,26 @@ class sfWidgetFormEmbeddedForm extends sfWidgetForm
         $form = $this->getOption('form');
         $form->getWidgetSchema()->setNameFormat($name.'[%s]');
 
-        if($archiverClass = $this->getOption('archiver'))
-        {
+        if($archiverClass = $this->getOption('archiver')) {
             $archiver = new $archiverClass();
-
             $value = $archiver->isAsleep($value) ? $archiver->wake($value) : $value;
         }
 
         $form->setDefaults($value);
-
-        return $form->render($attributes);
+    
+        if ($this->getOption('global_attributes')) {
+            foreach ($form->getWidgetSchema()->getFields() as $name => $widget) {
+                $widget->setAttributes($attributes);
+            }
+        }
+    
+        $html = $form->render($attributes);
+    
+        // Decorate the form
+        if ($format = $form->getWidgetSchema()->getFormFormatter()->getDecoratorFormat()) {
+          return strtr($format, array('%content%' => $html));
+        }
+    
+        return $html;
     }
 }
