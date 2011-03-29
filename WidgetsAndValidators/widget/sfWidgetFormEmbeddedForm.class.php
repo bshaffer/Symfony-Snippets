@@ -1,44 +1,57 @@
 <?php
 
-/*
- * This file is part of the symfony package.
- * (c) Fabien Potencier <fabien.potencier@symfony-project.com>
- * 
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 /**
- * sfWidgetFormTextarea represents a textarea HTML tag.
+ * sfWidgetFormEmbeddedForm represents an embedded form
  *
- * @package    symfony
- * @subpackage widget
- * @author     Fabien Potencier <fabien.potencier@symfony-project.com>
- * @version    SVN: $Id: sfWidgetFormTextarea.class.php 9046 2008-05-19 08:13:51Z FabianLange $
+ * @author    Brent Shaffer <bshafs at gmail dot com>
  */
 class sfWidgetFormEmbeddedForm extends sfWidgetForm
 {
-  public function configure($options = array(), $attributes = array())
-  {
-    $this->addRequiredOption('form');
-    
-    $this->addOption('archiver', 'sfArchiverSerialize');
-    
-    return parent::configure($options, $attributes);
-  }
-  
-  public function render($name, $value = null, $attributes = array(), $errors = array())
-  {
-    $form = $this->getOption('form');
-    $form->getWidgetSchema()->setNameFormat($name.'[%s]');
-    
-    $archiverClass = $this->getOption('archiver');
-    $archiver = new $archiverClass();
-    
-    $value = $archiver->isAsleep($value) ? $archiver->wake($value) : $value;
-    
-    $form->setDefaults($value);
+    /**
+    * options:
+    *    * form: Required sfForm instance rendered by this widget
+    *    * archiver: provide an archiver to sanitize results into a specific format (XML, YAML, etc).  Default is array.
+    *    * global_attributes: if specified, attributes are passed as if to a widget.  Apply to ALL widgets
+    *
+    * @param string $options 
+    * @param string $attributes 
+    * @return null
+    * @author Brent Shaffer
+    */
+    public function configure($options = array(), $attributes = array())
+    {
+        $this->addRequiredOption('form');
+        $this->addOption('archiver');
+        $this->addOption('global_attributes', true);
 
-    return $form->render($attributes);
-  }
+        return parent::configure($options, $attributes);
+    }
+
+    public function render($name, $value = null, $attributes = array(), $errors = array())
+    {
+        $form = $this->getOption('form');
+        $form->getWidgetSchema()->setNameFormat($name.'[%s]');
+
+        if($archiverClass = $this->getOption('archiver')) {
+            $archiver = new $archiverClass();
+            $value = $archiver->isAsleep($value) ? $archiver->wake($value) : $value;
+        }
+
+        $form->setDefaults($value);
+    
+        if ($this->getOption('global_attributes')) {
+            foreach ($form->getWidgetSchema()->getFields() as $name => $widget) {
+                $widget->setAttributes($attributes);
+            }
+        }
+    
+        $html = $form->render($attributes);
+    
+        // Decorate the form
+        if ($format = $form->getWidgetSchema()->getFormFormatter()->getDecoratorFormat()) {
+          return strtr($format, array('%content%' => $html));
+        }
+    
+        return $html;
+    }
 }
